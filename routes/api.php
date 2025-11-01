@@ -12,3 +12,4 @@ Route::get('/user', function (Request $request) {
 
 //Authentication routes
 Route::get('courses', [CourseController::class, 'courses']);
+Route::get('courseDetails/{slofuncrsi}', [CourseController::class, 'courseDetails']);
