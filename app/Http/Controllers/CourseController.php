@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class CourseController
 {
@@ -26,14 +28,10 @@ class CourseController
             ], 500);
         }
     }
-    use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 
-public function courseDetails(Request $req)
+public function courseDetails($slofuncrsi,Request $req)
 {
-    $courseId = $req->input('slofuncrsi');
+    $courseId = $slofuncrsi;
 
     try {
         // 1️⃣ Fetch course info
@@ -56,14 +54,23 @@ public function courseDetails(Request $req)
         // 3️⃣ Fetch instructor names from Auth Service (no token)
         $instructors = [];
         if (!empty($accountIds)) {
-            $response = Http::post('https://auth.transformbd.com/api/account_name', [
-                'account_ids' => $accountIds
-            ]);
+                // Create a unique cache key for this combination of instructors
+                $cacheKey = 'instructor_names_' . md5(json_encode($accountIds));
 
-            if ($response->successful()) {
-                $instructors = $response->json('data');
+                // Try to get cached instructor data
+                $instructors = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($accountIds) {
+                    $response = Http::post('https://auth.transformbd.com/api/account_name', [
+                        'account_ids' => $accountIds
+                    ]);
+
+                    if ($response->successful()) {
+                        return $response->json('data');
+                    }
+
+                    // Return empty array if API fails
+                    return [];
+                });
             }
-        }
 
         // 4️⃣ Return combined data
         return response()->json([
