@@ -75,7 +75,7 @@ public function courseDetails($slofuncrsi, Request $req)
         // 4️⃣ Fetch modules ordered by `order` column
         $modules = DB::table('modules')
             ->where('course_id', $courseId)
-            ->orderBy('order', 'asc')
+            ->orderBy('module_order', 'asc')
             ->get();
 
         // 5️⃣ Return combined data
