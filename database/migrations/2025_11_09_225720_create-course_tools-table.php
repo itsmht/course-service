@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('course_tools', function (Blueprint $table) {
-            $table->bigIncrements('course_tool_id');
+        Schema::create('course_techs', function (Blueprint $table) {
+            $table->bigIncrements('course_tech_id');
             $table->unsignedBigInteger('course_id');
-            $table->unsignedBigInteger('tool_id');
+            $table->unsignedBigInteger('technology_id');
             $table->foreign('course_id')->references('course_id')->on('courses');
-            $table->foreign('tool_id')->references('tool_id')->on('tool_techs');
+            $table->foreign('technology_id')->references('technology_id')->on('technologies');
             $table->timestamps();
         });
     }
