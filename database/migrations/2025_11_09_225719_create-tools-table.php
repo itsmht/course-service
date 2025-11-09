@@ -19,7 +19,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::create('tools', function (Blueprint $table) {
+        Schema::create('tool_techs', function (Blueprint $table) {
     $table->bigIncrements('tool_id');
     $table->string('name');
     $table->string('icon')->nullable();

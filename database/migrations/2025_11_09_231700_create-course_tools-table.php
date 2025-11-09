@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('course_id');
             $table->unsignedBigInteger('tool_id');
             $table->foreign('course_id')->references('course_id')->on('courses');
-            $table->foreign('tool_id')->references('tool_id')->on('tools');
+            $table->foreign('tool_id')->references('tool_id')->on('tool_techs');
             $table->timestamps();
         });
     }
