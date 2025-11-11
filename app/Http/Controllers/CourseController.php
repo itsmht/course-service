@@ -99,12 +99,12 @@ public function courseDetails($slofuncrsi, Request $req)
 }
 public function myEnrollments(Request $request)
 {
-    // Retrieve the account_id that was injected by the middleware
     $accountId = $request->account_id;
 
-    // Example: get all enrollments for this user
-    $enrollments = DB::table('enrollments')::with('course')
-        ->where('account_id', $accountId)
+    $enrollments = DB::table('enrollments')
+        ->join('courses', 'enrollments.course_id', '=', 'courses.course_id')
+        ->where('enrollments.account_id', $accountId)
+        ->select('enrollments.*', 'courses.title', 'courses.price', 'courses.featured_image_url')
         ->get();
 
     return response()->json([
