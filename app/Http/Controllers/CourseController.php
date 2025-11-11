@@ -103,7 +103,7 @@ public function myEnrollments(Request $request)
     $accountId = $request->account_id;
 
     // Example: get all enrollments for this user
-    $enrollments = \App\Models\Enrollment::with('course')
+    $enrollments = DB::table('enrollments')::with('course')
         ->where('account_id', $accountId)
         ->get();
 
