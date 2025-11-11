@@ -97,6 +97,21 @@ public function courseDetails($slofuncrsi, Request $req)
         ], 500);
     }
 }
+public function myEnrollments(Request $request)
+{
+    // Retrieve the account_id that was injected by the middleware
+    $accountId = $request->account_id;
 
+    // Example: get all enrollments for this user
+    $enrollments = \App\Models\Enrollment::with('course')
+        ->where('account_id', $accountId)
+        ->get();
+
+    return response()->json([
+        'code' => 200,
+        'message' => 'My enrollments retrieved successfully.',
+        'data' => $enrollments
+    ]);
+}
 
 }
