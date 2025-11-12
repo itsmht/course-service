@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <button type="button" id="add-instructor" class="btn btn-sm btn-secondary mt-2">+ Add Instructor</button>
+            <button type="button" id="addInstructorBtn" class="btn btn-sm btn-secondary mt-2">+ Add Instructor</button>
         </div>
 
         {{-- MODULES --}}
@@ -91,7 +91,7 @@
                     <input type="number" name="modules[0][module_order]" class="form-control mb-2" placeholder="Order (optional)">
                 </div>
             </div>
-            <button type="button" id="add-module" class="btn btn-sm btn-secondary mt-2">+ Add Module</button>
+            <button type="button" id="addModuleBtn" class="btn btn-sm btn-secondary mt-2">+ Add Module</button>
         </div>
 
         <button type="submit" class="btn btn-primary">Save Course</button>
