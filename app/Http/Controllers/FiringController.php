@@ -8,7 +8,7 @@ class FiringController
 {
     public function create()
     {
-        return view('courses.create');
+        return view('firing');
     }
 
     public function store(Request $request)
