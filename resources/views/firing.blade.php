@@ -102,17 +102,26 @@
 document.addEventListener('DOMContentLoaded', async () => {
     let instructorsData = [];
 
-    // Fetch instructors from API
     try {
         const response = await fetch('https://auth.transformbd.com/api/instructors');
-        instructorsData = await response.json();
+        const result = await response.json();
+
+        // ✅ Extract the instructors from "data"
+        if (result.data && Array.isArray(result.data)) {
+            instructorsData = result.data;
+        } else {
+            console.error('Unexpected instructor API format:', result);
+        }
+
+        // Populate the first dropdown
         populateInstructorSelect(document.querySelector('.instructor-select'), instructorsData);
     } catch (e) {
         console.error('Error loading instructors:', e);
     }
 
-    // Populate instructor dropdown
+    // Function to fill instructor select dropdown
     function populateInstructorSelect(selectElem, instructors) {
+        selectElem.innerHTML = '<option value="">Select Instructor</option>';
         instructors.forEach(inst => {
             const option = document.createElement('option');
             option.value = inst.account_id;
@@ -122,52 +131,41 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Add new instructor dropdown
-    let instructorCount = 1;
-    document.getElementById('add-instructor').addEventListener('click', () => {
-        const container = document.getElementById('instructors-container');
-        const div = document.createElement('div');
-        div.classList.add('instructor-item', 'mb-3');
-        div.innerHTML = `
-            <div class="d-flex gap-2">
-                <select name="instructors[${instructorCount}]" class="form-select instructor-select" required>
-                    <option value="">Select Instructor</option>
-                </select>
-                <button type="button" class="btn btn-danger btn-sm remove-instructor">Remove</button>
-            </div>
+    document.getElementById('addInstructorBtn').addEventListener('click', () => {
+        const newInstructorDiv = document.createElement('div');
+        newInstructorDiv.classList.add('instructor-item', 'd-flex', 'mb-2');
+        newInstructorDiv.innerHTML = `
+            <select name="instructor_account_ids[]" class="form-select instructor-select me-2" required></select>
+            <button type="button" class="btn btn-danger remove-instructor">Remove</button>
         `;
-        container.appendChild(div);
-        populateInstructorSelect(div.querySelector('.instructor-select'), instructorsData);
-        instructorCount++;
+        document.getElementById('instructorsWrapper').appendChild(newInstructorDiv);
+
+        // Fill the new select with instructors
+        populateInstructorSelect(newInstructorDiv.querySelector('.instructor-select'), instructorsData);
     });
 
-    // Remove instructor field
-    document.getElementById('instructors-container').addEventListener('click', e => {
+    // Remove instructor dropdown
+    document.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-instructor')) {
             e.target.closest('.instructor-item').remove();
         }
     });
 
-    // Add modules dynamically
-    let moduleCount = 1;
-    document.getElementById('add-module').addEventListener('click', () => {
-        const container = document.getElementById('modules-container');
-        const div = document.createElement('div');
-        div.classList.add('module-item', 'border', 'p-3', 'mb-2', 'rounded');
-        div.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <strong>Module ${moduleCount + 1}</strong>
-                <button type="button" class="btn btn-danger btn-sm remove-module">Remove</button>
-            </div>
-            <input type="text" name="modules[${moduleCount}][title]" class="form-control mb-2" placeholder="Module Title" required>
-            <textarea name="modules[${moduleCount}][description]" class="form-control mb-2" placeholder="Module Description" required></textarea>
-            <input type="number" name="modules[${moduleCount}][module_order]" class="form-control mb-2" placeholder="Order (optional)">
+    // Add module fields
+    document.getElementById('addModuleBtn').addEventListener('click', () => {
+        const newModule = document.createElement('div');
+        newModule.classList.add('module-item', 'border', 'p-3', 'mb-3');
+        newModule.innerHTML = `
+            <input type="text" name="module_titles[]" class="form-control mb-2" placeholder="Module Title" required>
+            <textarea name="module_descriptions[]" class="form-control mb-2" placeholder="Module Description" required></textarea>
+            <input type="number" name="module_orders[]" class="form-control mb-2" placeholder="Module Order">
+            <button type="button" class="btn btn-danger remove-module">Remove Module</button>
         `;
-        container.appendChild(div);
-        moduleCount++;
+        document.getElementById('modulesWrapper').appendChild(newModule);
     });
 
     // Remove module
-    document.getElementById('modules-container').addEventListener('click', e => {
+    document.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-module')) {
             e.target.closest('.module-item').remove();
         }
