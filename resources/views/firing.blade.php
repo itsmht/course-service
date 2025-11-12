@@ -101,12 +101,13 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
     let instructorsData = [];
+    let instructorIndex = 1; // Start index for new instructors (0 is in HTML)
+    let moduleIndex = 1;     // Start index for new modules (0 is in HTML)
 
     try {
         const response = await fetch('https://auth.transformbd.com/api/instructors');
         const result = await response.json();
 
-        // ✅ Extract the instructors from "data"
         if (result.data && Array.isArray(result.data)) {
             instructorsData = result.data;
         } else {
@@ -133,12 +134,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Add new instructor dropdown
     document.getElementById('addInstructorBtn').addEventListener('click', () => {
         const newInstructorDiv = document.createElement('div');
-        newInstructorDiv.classList.add('instructor-item', 'd-flex', 'mb-2');
+        newInstructorDiv.classList.add('instructor-item', 'mb-3'); // Match HTML style
+
+        // Use index for consistent naming
+        const index = instructorIndex++;
+        
         newInstructorDiv.innerHTML = `
-            <select name="instructor_account_ids[]" class="form-select instructor-select me-2" required></select>
-            <button type="button" class="btn btn-danger remove-instructor">Remove</button>
+            <div class="d-flex gap-2">
+                <select name="instructors[${index}]" class="form-select instructor-select" required></select>
+                <button type="button" class="btn btn-danger remove-instructor">Remove</button>
+            </div>
         `;
-        document.getElementById('instructorsWrapper').appendChild(newInstructorDiv);
+        
+        // ✅ FIX 1: Use the correct container ID
+        document.getElementById('instructors-container').appendChild(newInstructorDiv);
 
         // Fill the new select with instructors
         populateInstructorSelect(newInstructorDiv.querySelector('.instructor-select'), instructorsData);
@@ -154,14 +163,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Add module fields
     document.getElementById('addModuleBtn').addEventListener('click', () => {
         const newModule = document.createElement('div');
-        newModule.classList.add('module-item', 'border', 'p-3', 'mb-3');
+        newModule.classList.add('module-item', 'border', 'p-3', 'mb-2', 'rounded'); // Match HTML style
+
+        // Use index for consistent naming
+        const index = moduleIndex++;
+
         newModule.innerHTML = `
-            <input type="text" name="module_titles[]" class="form-control mb-2" placeholder="Module Title" required>
-            <textarea name="module_descriptions[]" class="form-control mb-2" placeholder="Module Description" required></textarea>
-            <input type="number" name="module_orders[]" class="form-control mb-2" placeholder="Module Order">
-            <button type="button" class="btn btn-danger remove-module">Remove Module</button>
+            <input type="text" name="modules[${index}][title]" class="form-control mb-2" placeholder="Module Title" required>
+            <textarea name="modules[${index}][description]" class="form-control mb-2" placeholder="Module Description" required></textarea>
+            <input type="number" name="modules[${index}][module_order]" class="form-control mb-2" placeholder="Order (optional)">
+            <button type="button" class="btn btn-danger remove-module" style="float: right;">Remove Module</button>
         `;
-        document.getElementById('modulesWrapper').appendChild(newModule);
+        
+        // ✅ FIX 2: Use the correct container ID
+        document.getElementById('modules-container').appendChild(newModule);
     });
 
     // Remove module
