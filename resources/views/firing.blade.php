@@ -19,6 +19,17 @@
                 <label class="form-label">Title</label>
                 <input type="text" name="title" class="form-control" required>
             </div>
+            <div class="mb-3">
+            <label class="form-label">Preview on Homepage?</label>
+            <select name="preview_homepage" class="form-select" required>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Other Information</label>
+                <textarea name="other_information" class="form-control" rows="4" placeholder="Enter any additional info..."></textarea>
+            </div>
 
             <div class="mb-3">
                 <label class="form-label">Description</label>

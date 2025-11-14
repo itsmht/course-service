@@ -30,6 +30,8 @@ class FiringController
                 'type' => $request->input('type'),
                 'created_at' => now(),
                 'updated_at' => now(),
+                'preview_homepage' => $request->preview_homepage,
+                'other_information' => $request->other_information,
             ], 'course_id');
 
             // Insert modules
