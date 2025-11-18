@@ -94,16 +94,17 @@
 
         {{-- MODULES --}}
         <div class="card mb-4 p-4">
-            <h4>Modules</h4>
-            <div id="modules-container">
-                <div class="module-item border p-3 mb-2 rounded">
-                    <input type="text" name="modules[0][title]" class="form-control mb-2" placeholder="Module Title" required>
-                    <textarea name="modules[0][description]" class="form-control mb-2" placeholder="Module Description" required></textarea>
-                    <input type="number" name="modules[0][module_order]" class="form-control mb-2" placeholder="Order (optional)">
-                </div>
-            </div>
-            <button type="button" id="addModuleBtn" class="btn btn-sm btn-secondary mt-2">+ Add Module</button>
+    <h4>Modules</h4>
+    <div id="modules-container">
+        <div class="module-item border p-3 mb-2 rounded">
+            <input type="text" name="modules[0][title]" class="form-control mb-2" placeholder="Module Title" required>
+            
+            <textarea name="modules[0][description]" class="form-control mb-2 d-none module-description-input" placeholder="Module Description" required></textarea>
+            <div class="description-editor" style="height: 150px;"></div> <input type="number" name="modules[0][module_order]" class="form-control mt-2" placeholder="Order (optional)">
         </div>
+    </div>
+    <button type="button" id="addModuleBtn" class="btn btn-sm btn-secondary mt-2">+ Add Module</button>
+</div>
 
         <button type="submit" class="btn btn-primary">Save Course</button>
     </form>
@@ -114,6 +115,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     let instructorsData = [];
     let instructorIndex = 1; // Start index for new instructors (0 is in HTML)
     let moduleIndex = 1;     // Start index for new modules (0 is in HTML)
+
+    //Quill Editor Initialization for existing module description
+    const quillOptions = {
+        theme: 'snow', // 'snow' is the standard toolbar theme
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'link'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+            ]
+        }
+    };
+
+    /**
+     * Finds a <div> and its preceding hidden <textarea> and initializes Quill.
+     * When the editor content changes, it updates the hidden textarea's value.
+     */
+    function initializeQuill(editorElement) {
+        // Find the hidden textarea right before this editor <div>
+        const hiddenTextarea = editorElement.previousElementSibling;
+
+        if (!hiddenTextarea || hiddenTextarea.tagName !== 'TEXTAREA') {
+            console.error('Could not find hidden textarea for Quill editor:', editorElement);
+            return;
+        }
+
+        // Initialize Quill on the <div>
+        const quill = new Quill(editorElement, quillOptions);
+
+        // Set the editor's initial content from the textarea (if any)
+        quill.root.innerHTML = hiddenTextarea.value;
+
+        // Listen for changes and update the hidden textarea
+        quill.on('text-change', () => {
+            // Update the hidden textarea's value with the editor's HTML
+            hiddenTextarea.value = quill.root.innerHTML;
+        });
+    }
 
     try {
         const response = await fetch('https://auth.transformbd.com/api/instructors');
