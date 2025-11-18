@@ -14,7 +14,7 @@ class FiringController
     public function store(Request $request)
     {
         DB::beginTransaction();
-        if ($request->hasFile('image_path')) 
+        if ($request->hasFile('featured_image')) 
         {
             $image = $request->file('featured_image');
             $imageName = time() . '_' . Str::slug($request->name) . '.' . $image->getClientOriginalExtension();
