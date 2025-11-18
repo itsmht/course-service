@@ -14,7 +14,13 @@ class FiringController
     public function store(Request $request)
     {
         DB::beginTransaction();
-
+        if ($request->hasFile('image_path')) 
+        {
+            $image = $request->file('featured_image');
+            $imageName = time() . '_' . Str::slug($request->name) . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('course_images'), $imageName);
+            $image_path = url("course_images/$imageName");
+        }
         try {
             // Insert into courses table
             $course_id = DB::table('courses')->insertGetId([
@@ -22,7 +28,7 @@ class FiringController
                 'description' => $request->input('description'),
                 'price' => $request->input('price'),
                 'featured_video_url' => $request->input('featured_video_url'),
-                'featured_image_url' => $request->input('featured_image_url'),
+                'featured_image_url' => $image_path,
                 'tagline' => $request->input('tagline'),
                 'location' => $request->input('location'),
                 'time' => $request->input('time'),

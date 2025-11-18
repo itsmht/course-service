@@ -9,7 +9,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('courses.store') }}" method="POST">
+    <form action="{{ route('courses.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         {{-- COURSE DETAILS --}}
@@ -47,8 +47,8 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Featured Image URL</label>
-                <input type="text" name="featured_image_url" class="form-control">
+            <label class="form-label">Featured Image</label>
+            <input type="file" name="featured_image" class="form-control" accept="image/*">
             </div>
 
             <div class="mb-3">
