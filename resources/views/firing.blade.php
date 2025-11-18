@@ -109,14 +109,17 @@
         <button type="submit" class="btn btn-primary">Save Course</button>
     </form>
 </div>
-
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
     let instructorsData = [];
     let instructorIndex = 1; // Start index for new instructors (0 is in HTML)
     let moduleIndex = 1;     // Start index for new modules (0 is in HTML)
 
-    //Quill Editor Initialization for existing module description
+    // =================================================================
+    // QUILL SETUP
+    // =================================================================
     const quillOptions = {
         theme: 'snow', // 'snow' is the standard toolbar theme
         modules: {
@@ -132,7 +135,6 @@ document.addEventListener('DOMContentLoaded', async () => {
      * When the editor content changes, it updates the hidden textarea's value.
      */
     function initializeQuill(editorElement) {
-        // Find the hidden textarea right before this editor <div>
         const hiddenTextarea = editorElement.previousElementSibling;
 
         if (!hiddenTextarea || hiddenTextarea.tagName !== 'TEXTAREA') {
@@ -140,19 +142,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // Initialize Quill on the <div>
         const quill = new Quill(editorElement, quillOptions);
-
-        // Set the editor's initial content from the textarea (if any)
         quill.root.innerHTML = hiddenTextarea.value;
-
-        // Listen for changes and update the hidden textarea
         quill.on('text-change', () => {
-            // Update the hidden textarea's value with the editor's HTML
             hiddenTextarea.value = quill.root.innerHTML;
         });
     }
 
+    // =================================================================
+    // INSTRUCTOR LOGIC
+    // =================================================================
     try {
         const response = await fetch('https://auth.transformbd.com/api/instructors');
         const result = await response.json();
@@ -183,9 +182,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Add new instructor dropdown
     document.getElementById('addInstructorBtn').addEventListener('click', () => {
         const newInstructorDiv = document.createElement('div');
-        newInstructorDiv.classList.add('instructor-item', 'mb-3'); // Match HTML style
+        newInstructorDiv.classList.add('instructor-item', 'mb-3'); 
 
-        // Use index for consistent naming
         const index = instructorIndex++;
         
         newInstructorDiv.innerHTML = `
@@ -195,41 +193,64 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `;
         
-        // ✅ FIX 1: Use the correct container ID
         document.getElementById('instructors-container').appendChild(newInstructorDiv);
-
-        // Fill the new select with instructors
         populateInstructorSelect(newInstructorDiv.querySelector('.instructor-select'), instructorsData);
     });
 
-    // Remove instructor dropdown
-    document.addEventListener('click', (e) => {
+    // =================================================================
+    // MODULE LOGIC
+    // =================================================================
+
+    // ✅ FIX 1: Initialize the FIRST module's editor when the page loads
+    const firstEditor = document.querySelector('#modules-container .description-editor');
+    if (firstEditor) {
+        initializeQuill(firstEditor);
+    }
+
+    // Add module fields
+    document.getElementById('addModuleBtn').addEventListener('click', () => {
+        const newModule = document.createElement('div');
+        newModule.classList.add('module-item', 'border', 'p-3', 'mb-2', 'rounded'); 
+
+        const index = moduleIndex++;
+
+        // ✅ FIX 2: Update innerHTML to use the hidden textarea and editor div
+        newModule.innerHTML = `
+            <input type="text" name="modules[${index}][title]" class="form-control mb-2" placeholder="Module Title" required>
+            
+            <textarea name="modules[${index}][description]" class="form-control mb-2 d-none" placeholder="Module Description" required></textarea>
+            <div class="description-editor" style="height: 150px;"></div>
+            
+            <input type="number" name="modules[${index}][module_order]" class="form-control mt-2" placeholder="Order (optional)">
+            <button type="button" class="btn btn-danger remove-module" style="float: right;">Remove Module</button>
+        `;
+        
+        document.getElementById('modules-container').appendChild(newModule);
+
+        // ✅ FIX 3: Initialize Quill on the NEW module you just added
+        const newEditorDiv = newModule.querySelector('.description-editor');
+        if (newEditorDiv) {
+            initializeQuill(newEditorDiv);
+        }
+    });
+
+    // =================================================================
+    // REMOVE BUTTON LOGIC (COMBINED)
+    // =================================================================
+
+    // ✅ FIX 4: Use event delegation on the containers.
+    // Your old code had two 'document.addEventListener' which was a bug.
+    // This new code listens on the containers, which is more efficient.
+
+    // Remove instructor
+    document.getElementById('instructors-container').addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-instructor')) {
             e.target.closest('.instructor-item').remove();
         }
     });
 
-    // Add module fields
-    document.getElementById('addModuleBtn').addEventListener('click', () => {
-        const newModule = document.createElement('div');
-        newModule.classList.add('module-item', 'border', 'p-3', 'mb-2', 'rounded'); // Match HTML style
-
-        // Use index for consistent naming
-        const index = moduleIndex++;
-
-        newModule.innerHTML = `
-            <input type="text" name="modules[${index}][title]" class="form-control mb-2" placeholder="Module Title" required>
-            <textarea name="modules[${index}][description]" class="form-control mb-2" placeholder="Module Description" required></textarea>
-            <input type="number" name="modules[${index}][module_order]" class="form-control mb-2" placeholder="Order (optional)">
-            <button type="button" class="btn btn-danger remove-module" style="float: right;">Remove Module</button>
-        `;
-        
-        // ✅ FIX 2: Use the correct container ID
-        document.getElementById('modules-container').appendChild(newModule);
-    });
-
     // Remove module
-    document.addEventListener('click', (e) => {
+    document.getElementById('modules-container').addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-module')) {
             e.target.closest('.module-item').remove();
         }
