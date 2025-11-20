@@ -12,7 +12,7 @@ class CourseController
     function courses()
     {
         try {
-            $courses = DB::table('courses')->get();
+            $courses = DB::table('courses')->where("status", "1")->get();
 
             return response()->json([
                 'code' => 200,
