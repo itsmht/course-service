@@ -47,7 +47,7 @@ class CheckoutController
     }
     public function initiate(Request $request, SslCommerzService $ssl)
     {
-        $course = Course::findOrFail($request->course_id);
+        $course = DB::table('courses')->where('course_id', $request->course_id)->first();
         $res = Http::post('https://auth.transformbd.com/api/account_name', [
                     'account_ids' => $request->account_id
                 ]);
