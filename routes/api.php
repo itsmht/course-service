@@ -24,7 +24,7 @@ Route::middleware([ValidateToken::class])->group(function () {
     Route::get('myEnrollments', [CourseController::class, 'myEnrollments']);
     });
 //Transaction Verification Route
-Route::get('/checkout/course/{course_id}', [CheckoutController::class, 'course']);
+Route::get('/checkout/course/{slofuncrsi}', [CheckoutController::class, 'course']);
 Route::post('/checkout/preview', [CheckoutController::class, 'preview']);
 Route::middleware([ValidateToken::class])->group(function () {
     Route::post('/checkout/initiate', [CheckoutController::class, 'initiate']);
