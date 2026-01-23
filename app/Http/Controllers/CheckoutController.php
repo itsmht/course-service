@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use App\Services\SslCommerzService;
 class CheckoutController
 {
     public function course($slofuncrsi, Request $req)
@@ -75,10 +76,17 @@ class CheckoutController
             'final_price' => $finalPrice
         ]);
 
-        Payment::create([
+        $enrollment = DB::table('enrollments')->insertGetId([
+            'course_id' => $course->course_id,
+            'account_id' => $request->account_id,
+            'promo_id' => $request->promo_id,
+            'final_price' => $finalPrice
+        ]);
+
+        $payment = DB::table('payments')->insert([
             'tran_id' => $tranId,
             'enrollment_id' => $enrollment->enrollment_id,
-            'amount' => $finalPrice
+            'amount' => $finalPrice,
         ]);
 
         $response = $ssl->initiate([
