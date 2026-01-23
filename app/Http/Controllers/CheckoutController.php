@@ -26,7 +26,8 @@ class CheckoutController
         $promo = null;
 
         if ($request->promo_code) {
-            $promo = PromoCode::where('code', $request->promo_code)
+            $promo = DB::table('promo_codes')
+                ->where('code', $request->promo_code)
                 ->where('status', 1)
                 ->firstOrFail();
 
