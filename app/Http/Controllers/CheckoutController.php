@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 class CheckoutController
 {
-    public function course(Request $req)
+    public function course($course_id, Request $req)
     {
-        $course = DB::table('courses')->where('course_id', $req->course_id)->first();
+        $course = DB::table('courses')->where('course_id', $course_id)->first();
         return response()->json([
             'course_id' => $course->course_id,
             'title' => $course->title,
