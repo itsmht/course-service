@@ -6,6 +6,8 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\LoginController;
 use App\Http\Middleware\ValidateToken;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PaymentIpnController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -28,4 +30,4 @@ Route::middleware([ValidateToken::class])->group(function () {
     Route::post('/checkout/initiate', [CheckoutController::class, 'initiate']);
     });
 Route::post('/payment/ipn', [PaymentIpnController::class, 'handle']);
-Route::get('/payment/status/{tran_id}', [PaymentStatusController::class, 'status']);
+Route::get('/payment/status/{tran_id}', [CheckoutController::class, 'status']);
